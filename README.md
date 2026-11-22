@@ -2,7 +2,7 @@
 
 Generative AI framework for realistic **3D volumetric defect synthesis** and industrial inspection research.
 
-This repository provides a research pipeline for creating synthetic volumetric defect data, training a 3D representation model, and evaluating generated or reconstructed defect volumes.
+This repository provides a synthetic research pipeline for creating volumetric defect data, training a 3D representation model, and evaluating generated or reconstructed defect volumes. It does not currently train on real industrial CT data.
 
 ## Project Goals
 
@@ -16,6 +16,8 @@ This repository provides a research pipeline for creating synthetic volumetric d
 
 ```text
 3D-Defect-Generation/
+├── .github/
+│   └── workflows/
 ├── configs/
 ├── data/
 ├── results/
@@ -27,7 +29,7 @@ This repository provides a research pipeline for creating synthetic volumetric d
 │   ├── evaluate.py
 │   └── models/
 │       └── autoencoder3d.py
-├── README_V1_RUN.md
+├── tests/
 ├── requirements.txt
 ├── .gitignore
 ├── LICENSE
@@ -59,7 +61,7 @@ Reconstruction / Latent Representation
 Evaluation and Visualization
 ```
 
-The `src/synthetic.py` module contains the synthetic-volume generation logic, while `src/dataset.py`, `src/train.py`, and `src/evaluate.py` support the machine-learning workflow.
+The `src/synthetic.py` module generates synthetic clean and defective volumes, while `src/dataset.py`, `src/train.py`, and `src/evaluate.py` support the machine-learning workflow. Training generates its input volumes directly; no external dataset is required.
 
 ## Installation
 
@@ -89,15 +91,25 @@ pip install -r requirements.txt
 
 ## Running the Project
 
-See `README_V1_RUN.md` for the current execution workflow and experiment notes.
+From the repository root, install the dependencies and run the configured experiment:
 
-Typical workflow:
+```bash
+python -m pip install -r requirements.txt
+python -m src.train --config configs/default.yaml
+python -m src.evaluate --config configs/default.yaml
+```
 
-1. Prepare or generate volumetric data.
-2. Configure the experiment.
-3. Train the 3D model.
-4. Generate or reconstruct defect volumes.
-5. Evaluate and inspect the results.
+Adjust the synthetic sample count, volume size, defect types, and training settings in `configs/default.yaml`. Training saves the best checkpoint, test volumes, masks, and training history under `results/`. Evaluation writes MAE and RMSE metrics and central-slice images there.
+
+## Tests
+
+The synthetic-generation and dataset tests require no downloaded data:
+
+```bash
+python -m unittest discover -s tests -v
+```
+
+The tests cover synthetic sample shapes and ranges, all supported defect types, and dataset tensor dimensions. They do not measure model quality or validate performance on real CT data.
 
 ## Research Directions
 
