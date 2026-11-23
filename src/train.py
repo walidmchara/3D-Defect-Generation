@@ -14,6 +14,7 @@ from torch.utils.data import DataLoader
 from src.dataset import VolumePairDataset
 from src.models.autoencoder3d import DefectAutoencoder3D
 from src.synthetic import generate_sample
+from src.split_validation import validate_disjoint_samples
 
 
 def set_seed(seed):
@@ -50,6 +51,12 @@ def build_data(cfg):
     n = len(clean)
     n_train = int(n * dc["train_fraction"])
     n_val = int(n * dc["validation_fraction"])
+
+    validate_disjoint_samples({
+        "train": (volume.tobytes() for volume in clean[:n_train]),
+        "validation": (volume.tobytes() for volume in clean[n_train:n_train+n_val]),
+        "test": (volume.tobytes() for volume in clean[n_train+n_val:]),
+    })
 
     return (
         (clean[:n_train], defective[:n_train], masks[:n_train]),

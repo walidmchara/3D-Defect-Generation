@@ -101,6 +101,8 @@ python -m src.evaluate --config configs/default.yaml
 
 Adjust the synthetic sample count, volume size, defect types, and training settings in `configs/default.yaml`. Training saves the best checkpoint, test volumes, masks, and training history under `results/`. Evaluation writes MAE and RMSE metrics and central-slice images there.
 
+Before training, the generated clean volumes are checked for exact duplicates across the training, validation, and test splits. This guards against exact sample reuse, not near-duplicates or a shared generator bias; synthetic holdout performance does not establish real-world generalization.
+
 ## Tests
 
 The synthetic-generation and dataset tests require no downloaded data:
